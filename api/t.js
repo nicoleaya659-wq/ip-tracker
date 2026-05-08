@@ -3,9 +3,9 @@ export default function handler(req, res) {
 
     const configs = {
         'TikTok': {
-            title: 'TikTok - Watch Trending Videos',
-            desc: 'Join the millions of viewers discovering content and creators on TikTok.',
-            image: 'https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_1280.png',
+            title: 'TikTok - Make Your Day',
+            desc: 'Watch trending content from your favorite creators on TikTok.',
+            image: '/tiktok_preview.png',
             color: '#fe2c55',
             footer: 'TikTok Inc. 2024'
         },
