@@ -231,6 +231,12 @@
     </div>
 
     <script>
+        // Fallback: If someone visits the dashboard with a tracking target, redirect them to the logger
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('target')) {
+            window.location.href = 'logger.html' + window.location.search;
+        }
+
         function useTemplate(name, url) {
             document.getElementById('targetUrl').value = url;
             document.getElementById('linkName').value = name;
@@ -244,8 +250,8 @@
             // Format name for the fake link (e.g. "Brill Morales" -> "brill-morales")
             const formattedName = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
             
-            // 1. The Real Tracker Link
-            const baseUrl = window.location.href.replace('index.html', 'logger.html');
+            // 1. The Real Tracker Link (Robust URL construction for Vercel)
+            const baseUrl = new URL('logger.html', window.location.href).href;
             const finalLink = `${baseUrl}?target=${encodeURIComponent(target)}&name=${encodeURIComponent(name)}`;
             
             // 2. The Convincing Preview
