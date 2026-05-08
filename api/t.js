@@ -1,11 +1,16 @@
 export default function handler(req, res) {
     const { name, target } = req.query;
 
+    // Build the absolute base URL from the request (needed for og:image to work on social media)
+    const protocol = req.headers['x-forwarded-proto'] || 'https';
+    const host = req.headers.host;
+    const baseUrl = `${protocol}://${host}`;
+
     const configs = {
         'TikTok': {
             title: 'TikTok - Make Your Day',
             desc: 'Watch trending content from your favorite creators on TikTok.',
-            image: '/tiktok_preview.png',
+            image: `${baseUrl}/tiktok_preview.png`,
             color: '#fe2c55',
             footer: 'TikTok Inc. 2024'
         },
@@ -45,10 +50,17 @@ export default function handler(req, res) {
     
     <!-- Dynamic Social Previews (Open Graph) - Optimized for Vercel -->
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="${platform}">
     <meta property="og:title" content="${cfg.title}">
     <meta property="og:description" content="${cfg.desc}">
     <meta property="og:image" content="${cfg.image}">
+    <meta property="og:image:width" content="1280">
+    <meta property="og:image:height" content="640">
+    <meta property="og:url" content="${baseUrl}/t/${platform}">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${cfg.title}">
+    <meta name="twitter:description" content="${cfg.desc}">
+    <meta name="twitter:image" content="${cfg.image}">
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/supabase_config.js"></script>
