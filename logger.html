@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_config.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+            color: #333;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin-bottom: 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .container {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader"></div>
+        <p>Loading project assets...</p>
+    </div>
+
+    <script>
+        async function logAndRedirect() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const target = urlParams.get('target') || 'https://google.com';
+            const linkName = urlParams.get('name') || 'Unnamed Link';
+
+            try {
+                // 1. Get IP and Location Data
+                const response = await fetch('https://ipapi.co/json/');
+                const data = await response.json();
+
+                // 2. Log to Supabase
+                const { error } = await window.supabaseClient
+                    .from('ip_logs')
+                    .insert([{
+                        ip_address: data.ip,
+                        city: data.city,
+                        region: data.region,
+                        country: data.country_name,
+                        org: data.org,
+                        user_agent: navigator.userAgent,
+                        target_url: target,
+                        link_name: linkName
+                    }]);
+
+                if (error) console.error('Supabase Error:', error);
+
+            } catch (err) {
+                console.error('Logging failed:', err);
+            } finally {
+                // 3. Always redirect, even if logging fails
+                window.location.href = target;
+            }
+        }
+
+        // Run on load
+        logAndRedirect();
+    </script>
+</body>
+</html>
